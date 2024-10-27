@@ -533,7 +533,15 @@ Change the :443 to :8220
 
 ![1](https://github.com/user-attachments/assets/84444783-b5a8-46e6-b565-ea8972ee0dd1)
 
+Now to correctly install the agent, past the agent link given back into the windows server. Delete the 443 and type 8220.
 
+Once again an error, but this one is different it is a x509 failed certificate. To pass that, paste last agent install back into terminal and add `--insecure`, then type y.
+
+Now the agent has correctly installed.
+
+To double check it was installed correctly, in Elastic, go to fleet > agents.
+
+![1](https://github.com/user-attachments/assets/c5db34ce-e520-45b8-80d1-70573833bc4c)
 
 
 

@@ -355,14 +355,183 @@ Now both VM's are running.
 
 # Elastic Agent & Fleet Server Setup
 
+First in VULTR compute dashboard, deploy a new instance.
 
+![1](https://github.com/user-attachments/assets/3b881e6e-6f0b-4e0c-b356-4b9656dd705a)
 
+This instance, the optimized cloud compute would work.
 
+![1](https://github.com/user-attachments/assets/42793519-4d2c-43e5-9e25-04e62c665308)
 
+Location select the same location as previously
 
+![1](https://github.com/user-attachments/assets/088e74da-d2cc-40aa-b608-427f69a26be9)
 
+Image select Ubunu same as before.
 
+![1](https://github.com/user-attachments/assets/9f0b64fd-0d96-4e76-aa0b-cdeb8ab0c32e)
 
+Size of the image, just the cheapest in general purpose will work.
+
+![1](https://github.com/user-attachments/assets/dffde3ee-6391-42f4-a122-2d158e0169eb)
+
+Additinal features, deselct auto backups and IPv6, and select VPC.
+
+![1](https://github.com/user-attachments/assets/facf8036-23c1-43b8-a011-c569faef8af5)
+
+Select the correct VPC.
+
+![1](https://github.com/user-attachments/assets/43ce8b4f-60cd-403f-979a-44a093597c24)
+
+Then dont select SSH key or firewall for now. And select "Deploy now"
+
+![1](https://github.com/user-attachments/assets/504190c5-a092-4b67-82e0-073e520db744)
+
+Back inside the web GUI. Select the drop down menu > scroll down to "managment" > select "Fleet"
+
+![1](https://github.com/user-attachments/assets/59da5753-2d2b-4c84-99e9-037188aaca47)
+
+Select "Add Fleet Server"
+
+![1](https://github.com/user-attachments/assets/19fd7f45-efab-47da-9efb-f8476f5b3ec4)
+
+Name the new fleet server. 
+
+For the URL, use your fleet servers public IP in VULTR.
+
+Format for URL: https://[public IP]
+
+![1](https://github.com/user-attachments/assets/10e87529-826c-4f93-b7e8-095cf730a54f)
+
+![1](https://github.com/user-attachments/assets/3e659df9-0668-4406-add6-a4e396855a05)
+
+After a couple of seconds of generating.
+
+![1](https://github.com/user-attachments/assets/32fbaaf9-f5a2-4752-a0ba-5fa9db8ca335)
+
+I need to install this fleet server on the fleet server I created in VULTR.
+
+To do this, select the fleet server VM in VULTR.
+
+![1](https://github.com/user-attachments/assets/eeb40b44-2816-4638-9a3f-d95200e9580c)
+
+Select View in console.
+
+![1](https://github.com/user-attachments/assets/805c4244-4b9b-4a26-9d83-510450b25261)
+
+If it starts up then you know the server is operating. Open a new PowerShell window on host computer.
+
+Commands: `ssh root@[ip of fleet server]` > `yes` > `enter password given`
+
+![1](https://github.com/user-attachments/assets/5f120d44-1375-4384-b211-0e456ef8791e)
+
+![1](https://github.com/user-attachments/assets/998324c8-2c98-4863-90b0-07400a924921)
+
+Once inside fleet server, best practive is to update repositories.
+
+Commands: `apt-get update && apt-get upgrade -y`
+
+Once install is completed, a firewall adjustment is needed, the firewall is excluiding the fleet server.
+
+To change, copy the IP of the fleet server.
+
+![1](https://github.com/user-attachments/assets/d35b2391-416a-4436-ad4f-da4222a69fa2)
+
+Select Products > Network > Firewall
+
+For this rule I want from any TCP from the fleet server to be allowed.
+
+![1](https://github.com/user-attachments/assets/4b59eea5-e450-4838-ac4c-c718fad9da32)
+
+Then copy and paste into fleet server powershell. And wait for it to finish connecting.
+
+![1](https://github.com/user-attachments/assets/d4bdbb2f-fbe3-4614-8257-4eb613900dd9)
+
+If it doesnt finish click enter, then it will prompt you to confirm installation.
+
+After that if it still doesnt connect we have to adjust the firewall on the VM. To do this type in the main VM: `ufw allow 9200` This is the default port for elastic search.
+
+![1](https://github.com/user-attachments/assets/e026ebf8-b02d-4814-8f33-1bb94804ae4f)
+
+Now try to re run the agent install.
+
+![1](https://github.com/user-attachments/assets/5589d5a6-dfd6-48d2-af7c-7b95026deef1)
+
+![1](https://github.com/user-attachments/assets/00e680bc-326c-4692-940f-0f615a940ef0)
+
+Once you see either of the following, you know it was successful.
+
+![1](https://github.com/user-attachments/assets/4096ac73-eb1a-4632-b481-572b21fa53ce)
+
+AND
+
+![1](https://github.com/user-attachments/assets/74f9cfe7-011e-4f13-939a-e28dbd6035ca)
+
+Select "Continue Enrolling"
+
+Name the new policy.
+
+![1](https://github.com/user-attachments/assets/39b8aba1-4033-4164-bbf6-25608ef70573)
+
+Scroll down to where you can select "windows" since this is going onto our Windows server.
+
+Copy the agent code.
+
+![1](https://github.com/user-attachments/assets/87f07194-7506-4ecf-8e64-5691e8275149)
+
+# Installing Agent onto Machine
+
+Select the Windows server from the compute dashboard in VULTR.
+
+![1](https://github.com/user-attachments/assets/8961cbc9-c12d-4c99-9891-97dd0a6ae311)
+
+Select view consol.
+
+![1](https://github.com/user-attachments/assets/add3b3c8-65c2-492f-b14a-cb2778c5bcc6)
+
+Use login that is provided, you can RDP to machine as well.
+
+![1](https://github.com/user-attachments/assets/3afcf356-c6b8-47a3-b23c-545dca122124)
+
+Inside of the windows server, open PowerShell as administrator.
+
+Copy the gaent from before. Then paste inside ofg clipboard of Windows server.
+
+![1](https://github.com/user-attachments/assets/f87588d3-cc19-41db-a38e-6cf26a9abd9f)
+
+Due to the error being received, the port from the agent to server is being haulted.
+
+The firewall with the VM still hasnt been changed.
+
+To do this, inside the fleet server enter: `ufw allow 8220`
+
+![1](https://github.com/user-attachments/assets/332a7fe3-769b-47ad-bdfb-80c94c9c1c50)
+
+To find the 8220 (port number)
+
+Visit this site: https://www.elastic.co/guide/en/fleet/current/add-fleet-server-on-prem.html
+
+Scroll down to "default port assignment"
+
+![1](https://github.com/user-attachments/assets/bda6662c-4822-4ee1-8857-0269c96894b4)
+
+Try to instal agent again on windows server.
+
+Get the same error! As we can see the error says we are using port 443 to send data. 
+
+To make that change, back inside the fleet server ssh session: `ufw allow 443`
+
+Try installing again.
+
+Same error appeared. **Final fix** is to go to fleet homepage inside elastic.
+
+Go to settings. Select ther pencil to the right to edit the host information.
+
+By default the agent is sending data over port 443 but the server is only sending and accepting data from 8220.
+
+Change the :443 to :8220
+
+![1](https://github.com/user-attachments/assets/84444783-b5a8-46e6-b565-ea8972ee0dd1)
 
 
 

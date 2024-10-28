@@ -1,5 +1,35 @@
 # Elastic-Home-Lab
 
+# Quick Summary of Sections
+
+**Elastic Server Setup:**
+
+* Setup first Virtual Private Cloud (VPC)
+* VM running inside VPC
+* Download Elastic onto VM via PowerShell
+* Setup firewall for VM inside VULTR
+
+**Installing Kibana:**
+
+* Downloaded and installed Kibana in VM via PowerShell
+* Adjusted Firewall settings
+
+**Windows Server Setup**
+
+* Deployed another VM, this time Windows.
+
+**Elastic Agent & Fleet Server Setup**
+
+* Deployed another VM, this time another Ubuntu instance, this will be the fleet server.
+* Expanded the VPC
+* Started a fleet inside Elastic
+* Adjusted in PowerShell to make it so all servers could talk to each other, while filtering out the public data I dont want.
+* Created and connected our first agent, data is now being output and visualized.
+
+**Installing Sysmon**
+
+* Installed Sysmon on Windows server, and started to look at logs and noticing potential bad logs via event codes.
+
 # Elastic Server Setup
 
 First I need a cloud enviorment, I use VULTUR due to the free $300.
@@ -542,6 +572,86 @@ Now the agent has correctly installed.
 To double check it was installed correctly, in Elastic, go to fleet > agents.
 
 ![1](https://github.com/user-attachments/assets/c5db34ce-e520-45b8-80d1-70573833bc4c)
+
+# Installing Sysmon
+
+Sysmon documentation: https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon
+
+First I am going to use Remote Desktoip Connection on my host machine.
+
+Using the IP and credentials from my windows server in VULTR
+
+![1](https://github.com/user-attachments/assets/529292cc-e8be-4c42-a1a1-63dcc78913fb)
+
+Go to the link above inside microsoft edge, once inside the windows server.
+
+Slect "Download Sysmon"
+
+![1](https://github.com/user-attachments/assets/d94e5c14-68de-4bc8-8dc2-3f7616acb7bc)
+
+Then right click and extract files.
+
+![2](https://github.com/user-attachments/assets/d61984e4-09b8-46ae-a99e-9b5e4efca112)
+
+Now to get a configuration file for Sysmon.
+
+Google: "sysmon olaf configuration"
+
+Or just go to this link: https://github.com/olafhartong/sysmon-modular
+
+Scroll down to the "sysmonconfi.xml" > select "Raw" > Right click > select "save as" > save inside sysmon's directory
+
+![1](https://github.com/user-attachments/assets/0e849a6e-3102-441c-9426-a0efbbabd714)
+
+![1](https://github.com/user-attachments/assets/ccc79096-f1fd-475f-bceb-7c3298ea6afa)
+
+Next
+
+![1](https://github.com/user-attachments/assets/e1eacac6-a289-42c2-8206-fb0632f0472e)
+
+To get into the Sysmon directory use: `cd C:\Users\Administrator\Downloads\Sysmon`
+
+Then `dir` to confirm your in the correct directory
+
+![1](https://github.com/user-attachments/assets/860fba72-80f3-4644-ab51-2491542bfe5b)
+
+Now to install sysmon: `.\Sysmon64.exe -i sysmonconfig.xml
+
+Agree to the license agreement.
+
+![1](https://github.com/user-attachments/assets/d4774656-41f6-42ec-91b9-d4bf330d312a)
+
+To check if Sysmon is installed, search "Services" scroll down to thee S's
+
+![1](https://github.com/user-attachments/assets/86635fa3-4ddf-48e0-a1df-96862f07905a)
+
+Or Ssearch "Event Viewer" > Select Application and services drop down > Microsoft > Windows > sysmon
+
+![1](https://github.com/user-attachments/assets/6b350c21-aa00-4ee3-90cb-595cbd8bf034)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

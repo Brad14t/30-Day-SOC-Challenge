@@ -1,4 +1,13 @@
-# Elastic-Home-Lab
+# 30 Day MYDFIR SOC Challenge
+
+What will be completed by the end of this challenge:
+
+* How to setup and configure ELK.
+* Attack, detect and investigate threats.
+* Create alerts and dashboards.
+* Setup and integrate ticketing system.
+
+"""Future pictures of final setup and uses below:"""
 
 # Quick Summary of Sections
 

@@ -43,9 +43,15 @@ What will be completed by the end of this challenge:
 
 * Allow for Windows Defender and Sysom Logs to be ingested by Elasticsearch for easy detection and hunting.
 
+**Ubuntu Server Set-up**
 
+* Set-up SSH server.
 
+* Reveiw authentication logs in real time
 
+**Elastic Agent on Ubuntu**
+
+* Install an Elastic Agent onto an Ubuntu Server, allowing for query withiun Elastic.
 
 # Elastic Server Setup
 
@@ -754,7 +760,123 @@ If you cannot get any data here, add another route for your VULTUR firewall. All
 
 Here we can filter all data and look through and practice your hunting and detection skills.
 
+# Ubuntu Server Set-up
 
+First head to VULTUR, in the compute section > select "Deploly"
+
+![1](https://github.com/user-attachments/assets/e81a9a5c-ac23-42fa-8866-7ceeee2e981b)
+
+For the type, this instance isnt needing to be big, select shared CPU.
+
+![1](https://github.com/user-attachments/assets/b23f6e92-6071-4a6c-904b-b9f815b84aa4)
+
+Location select same region from before.
+
+Image select Ubuntu 24.04 X64
+
+![1](https://github.com/user-attachments/assets/5dfe1366-8dae-4e11-8596-1f4b3b307acf)
+
+Size of the instance select the cheapest, so regular cloud compue tab > 25 GB SSD
+
+![1](https://github.com/user-attachments/assets/689985db-adfc-43a2-a8df-59e495335b10)
+
+Disable additional features.
+
+![1](https://github.com/user-attachments/assets/6119a65d-525e-4c6c-a182-f4dadb675513)
+
+Leave everything else default, just add a name to the server then select deploy.
+
+![1](https://github.com/user-attachments/assets/1f195c2a-9787-4268-abf8-05cb035482ee)
+
+Once the server says "Running" I ca ssh into using powershell.
+
+![1](https://github.com/user-attachments/assets/9df90f03-2fe0-4553-970a-be3a2c69437d)
+
+Once inside, update repositories.
+
+Command: `apt-get update && apt-get upgrade -y`
+
+Once finished updating, to locate the authentication logs `cd` to `/var/log`
+
+![1](https://github.com/user-attachments/assets/441b393c-eecb-44c5-a554-ba18db2a4331)
+
+SSH server is now setup and brute force attacks are now being shown.
+
+# Elastic Agent on Ubuntu 
+
+To start I head to Elastic > select the menu > scroll down to "fleet"
+
+![1](https://github.com/user-attachments/assets/ebe9e53a-3981-4bcf-830b-42b2899f582d)
+
+Then select Agent policies tab > create agent policy.
+
+![1](https://github.com/user-attachments/assets/d8dd19b1-99b6-4a4a-bf65-995ae450490e)
+
+Name it > select "create agent policy"
+
+![1](https://github.com/user-attachments/assets/c817d400-bc65-4cc6-b6e7-9088e44a30e0)
+
+Select your new policy.
+
+Here in the details we can see where the logs are collected from.
+
+![1](https://github.com/user-attachments/assets/6eac6693-b977-44b1-98c9-8ccc74d922d2)
+
+As we saw before the logs we need are located at /var/log/auth.log.
+
+The /var/log/secure wont be seen on our machine since it's only found on a Red Hat/ Cent OS.
+
+Back in the Fleet Agents, select "Add agent"
+
+![1](https://github.com/user-attachments/assets/c19555d9-fd2a-4043-8488-ef8862dd2a7e)
+
+For type select the newly created Linus policy.
+
+![1](https://github.com/user-attachments/assets/d7c0d8ca-8df9-428c-a862-d7377983a724)
+
+Enreoll in fleet.
+
+![1](https://github.com/user-attachments/assets/cd879713-1b29-4a3d-8d2a-7182c373cb01)
+
+Next step is to instyall agent. Copy ther command and head back to SSH server.
+
+![1](https://github.com/user-attachments/assets/0bd2a03f-97ae-40f9-9e0e-35665b4ac5aa)
+
+Make sure to be in home directory.
+
+![1](https://github.com/user-attachments/assets/7b91915a-9f18-49e8-98a3-7e047883cce6)
+
+We run into the same error as before, the x509 certificate signed by unknown autrhority.
+
+The fix is to add --insecure to the command since we are using a self signed cetificate
+
+![1](https://github.com/user-attachments/assets/2e91725d-2a63-446b-8963-d174a1251d78)
+
+![1](https://github.com/user-attachments/assets/9a2428da-9761-4622-9f39-73e3f90e9df4)
+
+Now all 3 agents are working. Remember if no data is showing for the new agent to change the rule in the firewall to all TCP through port 9200 to Elastic server.
+
+![1](https://github.com/user-attachments/assets/291223d1-46c9-4b9b-9da6-685848a0453f)
+
+To check if installed correctly and you can access that data.
+
+Back in Elastic go to Discover, clear any filters and refresh.
+
+On the left fdind "agent.name" and look for your Linux server. 
+
+![1](https://github.com/user-attachments/assets/170539fe-07ee-4dc3-a686-83714378b92d)
+
+# Creating Alerts 
+
+Looking for failed login attempts. 
+
+Inside Elastic > Discover 
+
+To filter for SSH logs select "agent.name" > Linux server little + sign
+
+![1](https://github.com/user-attachments/assets/e3082920-d330-4091-b9e2-d2053d699440)
+
+3 fields that are of intrest when looking for brute force attacks are: failed attempts, the source IP, and user.
 
 
 

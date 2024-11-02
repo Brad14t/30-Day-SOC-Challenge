@@ -39,6 +39,14 @@ What will be completed by the end of this challenge:
 
 * Installed Sysmon on Windows server, and started to look at logs and noticing potential bad logs via event codes.
 
+**Ingest Sysmon and Windows Logs into Elastic Search**
+
+* Allow for Windows Defender and Sysom Logs to be ingested by Elasticsearch for easy detection and hunting.
+
+
+
+
+
 # Elastic Server Setup
 
 First I need a cloud enviorment, I use VULTUR due to the free $300.
@@ -554,7 +562,7 @@ Scroll down to "default port assignment"
 
 ![1](https://github.com/user-attachments/assets/bda6662c-4822-4ee1-8857-0269c96894b4)
 
-Try to instal agent again on windows server.
+Try to install agent again on windows server.
 
 Get the same error! As we can see the error says we are using port 443 to send data. 
 
@@ -634,10 +642,117 @@ To check if Sysmon is installed, search "Services" scroll down to thee S's
 
 ![1](https://github.com/user-attachments/assets/86635fa3-4ddf-48e0-a1df-96862f07905a)
 
-Or Ssearch "Event Viewer" > Select Application and services drop down > Microsoft > Windows > sysmon
+Or Search "Event Viewer" > Select Application and services drop down > Microsoft > Windows > sysmon
 
 ![1](https://github.com/user-attachments/assets/6b350c21-aa00-4ee3-90cb-595cbd8bf034)
 
+Now Sysmon is successfully installed onto a windows server in the cloud.
+
+# Ingest Sysmon and Windows Logs into Elastic Search
+
+First is to head toi your Elastic instance. And select "Add Integration".
+
+![1](https://github.com/user-attachments/assets/1583c721-999c-4bad-bd03-9a80ac4b7d91)
+
+For sysmon integration, search "Windows" and select "Custom Windows Event Logs".
+
+![1](https://github.com/user-attachments/assets/5af9c65e-6e3f-4a52-83e5-c3f8ed858fa5)
+
+This page gives great details to refrence back to later.
+
+Select "Add Custom Windows Event Logs"
+
+![1](https://github.com/user-attachments/assets/9b8ff6af-3e52-4505-9e47-62f5e9ed43bc)
+
+Then create a name and add description for integration.
+
+![1](https://github.com/user-attachments/assets/54c10b64-1e6b-45ed-9f9e-c8a0a591b774)
+
+To get the "Channel Name" head back to your RDP session with windows server, then go to Event Viewer and locate sysmon logs.
+
+![1](https://github.com/user-attachments/assets/7679df20-bde7-41b3-9315-9419ba8d00a7)
+
+![2](https://github.com/user-attachments/assets/62bae43f-1a5e-4fbf-8a88-2f39785d33b3)
+
+Select the drop down arrow and right click "operational" > select properties.
+
+This is the full channel name.
+
+![1](https://github.com/user-attachments/assets/5cbb5e40-bff8-42cd-84b2-633af94ad9b6)
+
+Copy and paste into channel name.
+
+Then leave defaults for the rest in this section.
+
+![1](https://github.com/user-attachments/assets/b0eaea0f-405c-4523-8b81-d5e4c80d520f)
+
+Then for where to add, select exhisting host > then slect the windows policy.
+
+![1](https://github.com/user-attachments/assets/3a242c99-5803-4a1f-94cb-2f8364031f56)
+
+Save and continue. Then I will do the same for windows defender. Select "Add" at the top.
+
+![1](https://github.com/user-attachments/assets/27637342-de0b-4435-a24e-ab6707c46cac)
+
+Same process as before. Add Name and descripiton.
+
+![1](https://github.com/user-attachments/assets/196df040-37bb-4213-9276-b03d8cd7fcd9)
+
+For the channel, search inside event viewer for windows defender.
+
+For this log theirt is a lot of informational alerts. Each use case is different so choose to filter based on event codes here: 
+
+https://learn.microsoft.com/en-us/defender-endpoint/troubleshoot-microsoft-defender-antivirus
+
+For this case I want.
+
+Event ID 1116 - The antimalware platform detected malware or other potentially unwanted software.
+
+Event ID 1117 - The antimalware platform performed an action to protect your system from malware or other potentially unwanted software.
+
+Event ID 5001 - Real-time protection is disabled. (This is generated anytime the microsofty defender antivirus is disabled)
+
+To make these filter options. Copy and paste Widnows Defender path into channel name.
+
+Then select "Advanced Options"
+
+![1](https://github.com/user-attachments/assets/42632963-b4b6-43d1-a351-f57988d10842)
+
+Scroll down to Event ID and add desired codes.
+
+![1](https://github.com/user-attachments/assets/f24d4431-c4ef-45d6-b362-41e8f14749a9)
+
+Then for where to add, select "existing hosts" > select windows policy
+
+![1](https://github.com/user-attachments/assets/033dad0c-c434-47c5-a3c2-a037f8b58445)
+
+Now we have Sysmon and Windows Defender logs being pulled into Elastic.
+
+![1](https://github.com/user-attachments/assets/34eba4cf-3484-4b3f-bcfe-f1200c3ac615)
+
+To make sure this woked, select the menu drop down > discover
+
+![1](https://github.com/user-attachments/assets/d315952b-dfa0-4091-a3f5-59396962b414)
+
+By just typing "sysmon' or "defender" doesnt work. To use the proper input go to the menu > scroll down to integrations.
+
+![1](https://github.com/user-attachments/assets/10d87c5a-6b50-4459-8329-e43e79c4ce76)
+
+Search "windows" > select custom windows event logs > scroll down to the correct command to search based on event ID. And copy command.
+
+![1](https://github.com/user-attachments/assets/185bc355-8d4b-447d-b759-9419d2b7420a)
+
+Paste into search bar > the command should be: ` winlog.event_id: 1 > update
+
+If on the second page of any of the events, locate "event.provider".
+
+"Microsoft-Windows-Sysmon" is what we are looking for.
+
+![1](https://github.com/user-attachments/assets/ec8b520f-e477-484a-8765-3bdb2ef60c86)
+
+If you cannot get any data here, add another route for your VULTUR firewall. Allow incomming connecting into your Elastic server on port 9200.
+
+Here we can filter all data and look through and practice your hunting and detection skills.
 
 
 

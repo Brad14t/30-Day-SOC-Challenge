@@ -53,6 +53,10 @@ What will be completed by the end of this challenge:
 
 * Install an Elastic Agent onto an Ubuntu Server, allowing for query withiun Elastic.
 
+**Create Alerts and Dashboards in Kibana**
+
+* Create SSH Brute Force Alert & Dashboard
+
 # Elastic Server Setup
 
 First I need a cloud enviorment, I use VULTUR due to the free $300.
@@ -866,7 +870,7 @@ On the left fdind "agent.name" and look for your Linux server.
 
 ![1](https://github.com/user-attachments/assets/170539fe-07ee-4dc3-a686-83714378b92d)
 
-# Creating Alerts 
+# Creating Alerts and Dashboards in Kibana
 
 Looking for failed login attempts. 
 
@@ -874,33 +878,97 @@ Inside Elastic > Discover
 
 To filter for SSH logs select "agent.name" > Linux server little + sign
 
+This will only show data from the SSH server
+
 ![1](https://github.com/user-attachments/assets/e3082920-d330-4091-b9e2-d2053d699440)
 
 3 fields that are of intrest when looking for brute force attacks are: failed attempts, the source IP, and user.
 
+Looking at the fields to the left looking for something that relates to failed authentications.
+
+Locate the "system.auth.ssh.event" field > click the + next to field to add as a column
+
+![1](https://github.com/user-attachments/assets/14006f5a-b9f8-4e34-be4a-6043d6e036a0)
+
+To get the user field, scroll down and find "User.name", in there we can see all the different usernames attempting to brute force. 
+
+![1](https://github.com/user-attachments/assets/6de6e289-1898-4945-87c5-7b01e67338ac)
+
+Next is the source IP, scroll up to find "source.ip" and select the + to add as column
+
+![1](https://github.com/user-attachments/assets/88eeeb12-7bad-497a-904e-c91f5536f8a5)
+
+Add any further colomns you would like, I add "source.geo.country.name" to show the country and "source.geo.city_name" to show thye city, This is justr out of curiosity.
+
+![1](https://github.com/user-attachments/assets/3e98e1e7-8e14-4c8a-a62f-dc5b164513aa)
+
+Now there are someother login attempts other than failed, to show only failed. Go to any failed attempt and hovber over the word "Failed" and select the + to only show  failed attempts.
+
+![1](https://github.com/user-attachments/assets/f7282ba8-3f61-4c15-8b23-851f86ee7ea1)
+
+![2](https://github.com/user-attachments/assets/fb1dbcea-4ee2-4042-9729-98de784feaf9)
+
+Now save all changes made in the top right, selct "Save"
+
+![1](https://github.com/user-attachments/assets/623df743-2bd7-40f6-a3ba-53a6ad100c4b)
+
+To make this an alert, in the top right select "Alerts" > Create search threshold rule > Name it > Then under query is where you can change anythging about when you want the alert to trigger. For example changing the amount ofd atytempts within a certain abount of time to trigger an alert.
+
+![1](https://github.com/user-attachments/assets/1c4c2784-5994-4e1e-b833-3f6cd19a898f)
+
+Select save once any further changes are made. Now I have a basic alert, no action at this moment.
+
+I want a visualization on a map to quicly show where people are trying to log into.
+
+Select the menu button > "maps"
+
+![1](https://github.com/user-attachments/assets/fb5c5f7e-c984-4bbc-bc11-e8a262665f49)
+
+Next I will need a query to paste into the map. 
+
+Typing out the query we last did would be: `system.auth.ssh.event: * and agent.name[Linux server name] and system.auth.ssh.event: Failed`
+
+To confirm if your query will work for the map, search it inside overview tab and make surer the same data shows.
+
+![1](https://github.com/user-attachments/assets/23197345-bd9c-47be-870a-a42b4da79089)
+
+Next paste query into map (nothing will show) > select "add layer"
+
+![1](https://github.com/user-attachments/assets/98c2aeba-e732-4128-8d8c-77893610dc78)
+
+The "choropath" is what we are looking for.
+
+![1](https://github.com/user-attachments/assets/e2ac3291-c2e5-4dd0-990b-edf7aad0a4ce)
+
+For the layer, select administratyive boundaries > World Countries > Statistic source use data field previously used > Join field: type `source.geo.country_iso_code` > You will see the data displayt on the map now.  > Save and create name.
+
+![1](https://github.com/user-attachments/assets/fad005a6-b00c-4319-8960-8ca1722019a9)
+
+![1](https://github.com/user-attachments/assets/95ea9bd1-bb21-42e0-a8d0-f49af26fbae6)
+
+We now have a working dahboard to come back to and visually see where people are trying to login from.
+
+![1](https://github.com/user-attachments/assets/9eb966ab-6d63-4374-9e32-4e635961467e)
+
+Since we have a failed auth map, it only makes sense to make a successful map aswell.
+
+Select the ... on the map > duplicate
+
+![1](https://github.com/user-attachments/assets/12c62a21-40c7-47bc-ba04-884f9602847e)
+
+![1](https://github.com/user-attachments/assets/0c7a8026-7709-4206-94b3-ce246b0fd1fe)
+
+Select the ... on the new map > edit the name > save > edit map > change the query to `system.auth.ssh.event: * and agent.name[Linux server name] and system.auth.ssh.event: Accepted`
+
+![1](https://github.com/user-attachments/assets/c51cd97d-3e7f-4bed-8890-f42cd14a24c9)
+
+Now we have 2 completed dahsboards, hopefully you dont see as much color on the successful attempts map.
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 
 
 
 

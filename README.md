@@ -57,6 +57,8 @@ What will be completed by the end of this challenge:
 
 * Create SSH Brute Force Alert & Dashboard
 
+* Observe authentication logs from Windows Server & create an alert
+
 # Elastic Server Setup
 
 First I need a cloud enviorment, I use VULTUR due to the free $300.
@@ -964,11 +966,54 @@ Select the ... on the new map > edit the name > save > edit map > change the que
 
 Now we have 2 completed dahsboards, hopefully you dont see as much color on the successful attempts map.
 
+![1](https://github.com/user-attachments/assets/3650c015-79e9-4ee2-bf6e-bb1f92ecc7c9)
+
+Next is to setup an alert and dashboard for authentications from the windows server.
+
+Start in the discovery tab in Elastic > filter for just the windows logs.
+
+![1](https://github.com/user-attachments/assets/127eab2d-784e-4471-85b6-0706c683a60f)
+
+The event ID will be different since these are logs from a windows server.
+
+To filter to failed auth attempts in windows the event code is 4625. Use this query: `event.code: 4625`
+
+![1](https://github.com/user-attachments/assets/5403706a-bfe9-4a33-96d2-17bf9f246c95)
+
+Next is to find a user field and source IP.
+
+For user field find "user.name"
+
+![1](https://github.com/user-attachments/assets/d5135eb3-cbc0-4087-9b57-c66682d89f99)
+
+For source ip use find "source.ip"
+
+![1](https://github.com/user-attachments/assets/a524ff8e-3e85-4af0-b8e4-d860e73ac80a)
+
+Once complete, save and name the new dahboard.
+
+Next is to create an alert, select alerts > create search threshold rule.
+
+![1](https://github.com/user-attachments/assets/9d7823cd-4c82-46e3-87c7-17a9061cb57b)
+
+Create a name > change any setting of when you want the alert to be triggered.
+
+![1](https://github.com/user-attachments/assets/039afe51-890b-48f7-803b-66e402fcc7ed)
+
+Save when done.
 
 
 
 
- 
+
+
+
+
+
+
+
+
+
 
 
 
